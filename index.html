@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Docs - Pro Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hidden-section { display: none !important; }
+        /* Scrollbar styling for history */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background-color: #10b981; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-emerald-50 h-screen w-screen overflow-hidden text-emerald-900">
+
+    <div id="authContainer" class="h-full w-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-green-50 to-emerald-200">
+        
+        <div id="registerSection" class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-white/50 hidden-section">
+            <div class="text-center mb-6">
+                <span class="text-4xl text-emerald-600"><i class="fa-solid fa-seedling"></i></span>
+                <h2 class="text-2xl font-bold mt-2">Create Account</h2>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="regName" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:ring-2 focus:ring-emerald-500 bg-emerald-50" placeholder="Full Name">
+                <input type="email" id="regEmail" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:ring-2 focus:ring-emerald-500 bg-emerald-50" placeholder="Email Address">
+                <div>
+                    <input type="password" id="regPassword" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:ring-2 focus:ring-emerald-500 bg-emerald-50" placeholder="Password">
+                    <div class="mt-2 text-xs font-medium space-y-1">
+                        <p id="reqLength" class="text-red-500">✖ Minimum 8 characters</p>
+                        <p id="reqLetter" class="text-red-500">✖ At least 1 alphabet (a-z, A-Z)</p>
+                        <p id="reqSpecial" class="text-red-500">✖ At least 1 special character (!@#$%^&*)</p>
+                    </div>
+                </div>
+                <button id="registerBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg opacity-50 cursor-not-allowed" disabled>Register</button>
+                <p class="text-center text-sm mt-4">Already have an account? <button onclick="showLogin()" class="font-bold hover:underline text-emerald-700">Login here</button></p>
+            </div>
+        </div>
+
+        <div id="loginSection" class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-white/50">
+            <div class="text-center mb-6">
+                <span class="text-4xl text-emerald-600"><i class="fa-solid fa-leaf"></i></span>
+                <h2 class="text-2xl font-bold mt-2">Plant Docs AI</h2>
+                <p class="text-sm text-emerald-600 mt-1">Login to access your dashboard</p>
+            </div>
+            <div class="space-y-4">
+                <input type="email" id="loginEmail" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:ring-2 focus:ring-emerald-500 bg-emerald-50" placeholder="Email Address">
+                <input type="password" id="loginPassword" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:ring-2 focus:ring-emerald-500 bg-emerald-50" placeholder="Password">
+                <button onclick="handleLogin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all">Login / Enter</button>
+                <p class="text-center text-sm mt-4">Don't have an account? <button onclick="showRegister()" class="font-bold hover:underline text-emerald-700">Register now</button></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="appDashboard" class="hidden-section h-full w-full flex">
+        
+        <aside class="w-64 bg-emerald-900 text-emerald-50 flex flex-col shadow-2xl z-10 shrink-0">
+            <div class="p-6 text-center border-b border-emerald-800">
+                <i class="fa-solid fa-leaf text-3xl text-emerald-400 mb-2"></i>
+                <h2 class="text-xl font-bold tracking-wider">Plant Docs AI</h2>
+            </div>
+            <nav class="flex-1 p-4 space-y-2 mt-2 overflow-y-auto">
+                <button onclick="switchView('home')" id="navHome" class="nav-btn w-full flex items-center gap-3 px-4 py-3 bg-emerald-800 text-white rounded-xl transition-all text-left font-medium">
+                    <i class="fa-solid fa-house w-5"></i> Dashboard
+                </button>
+                <button onclick="switchView('detect')" id="navDetect" class="nav-btn w-full flex items-center gap-3 px-4 py-3 hover:bg-emerald-800 rounded-xl transition-all text-emerald-200 hover:text-white text-left font-medium">
+                    <i class="fa-solid fa-camera-retro w-5"></i> AI Detection
+                </button>
+                <button onclick="switchView('history')" id="navHistory" class="nav-btn w-full flex items-center gap-3 px-4 py-3 hover:bg-emerald-800 rounded-xl transition-all text-emerald-200 hover:text-white text-left font-medium">
+                    <i class="fa-solid fa-clock-rotate-left w-5"></i> Scan History
+                </button>
+                <button onclick="switchView('treated')" id="navTreated" class="nav-btn w-full flex items-center gap-3 px-4 py-3 hover:bg-emerald-800 rounded-xl transition-all text-emerald-200 hover:text-white text-left font-medium">
+                    <i class="fa-solid fa-hand-holding-heart w-5"></i> Treated Plants
+                </button>
+                <button onclick="switchView('guides')" id="navGuides" class="nav-btn w-full flex items-center gap-3 px-4 py-3 hover:bg-emerald-800 rounded-xl transition-all text-emerald-200 hover:text-white text-left font-medium">
+                    <i class="fa-solid fa-book-medical w-5"></i> Care Guides
+                </button>
+            </nav>
+            <div class="p-4 border-t border-emerald-800">
+                <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 hover:bg-red-500 hover:text-white text-red-400 rounded-xl transition-all font-bold">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 h-full overflow-y-auto p-8 relative bg-emerald-50">
+            
+            <div id="viewHome" class="view-section">
+                <h1 class="text-3xl font-bold mb-2">Welcome back, <span id="userNameDisplay" class="text-emerald-600">User</span>! 👋</h1>
+                <p class="text-emerald-700 mb-8">Manage your plants and keep them healthy.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex items-center gap-4">
+                        <div class="bg-blue-100 text-blue-600 p-4 rounded-xl"><i class="fa-solid fa-microscope text-2xl"></i></div>
+                        <div><p class="text-sm text-gray-500 font-medium">Total Scans</p><p id="statTotal" class="text-3xl font-bold">0</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex items-center gap-4">
+                        <div class="bg-red-100 text-red-600 p-4 rounded-xl"><i class="fa-solid fa-virus text-2xl"></i></div>
+                        <div><p class="text-sm text-gray-500 font-medium">Diseases Found</p><p id="statDiseased" class="text-3xl font-bold">0</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex items-center gap-4">
+                        <div class="bg-green-100 text-green-600 p-4 rounded-xl"><i class="fa-solid fa-check-double text-2xl"></i></div>
+                        <div><p class="text-sm text-gray-500 font-medium">Successfully Treated</p><p id="statTreated" class="text-3xl font-bold">0</p></div>
+                    </div>
+                </div>
+                
+                <button onclick="switchView('detect')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all inline-flex items-center gap-2">
+                    <i class="fa-solid fa-camera"></i> Start New Scan
+                </button>
+            </div>
+
+            <div id="viewDetect" class="view-section hidden-section max-w-2xl mx-auto mt-6">
+                <div class="bg-white rounded-3xl shadow-xl p-8 border border-emerald-100 text-center">
+                    <h2 class="text-2xl font-bold mb-6">Upload Leaf Image</h2>
+                    <div id="dropzone" class="border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-2xl p-8 cursor-pointer bg-emerald-50/50 transition-all">
+                        <input type="file" id="fileInput" accept="image/*" class="hidden">
+                        <div id="uploadPrompt">
+                            <i class="fa-solid fa-cloud-arrow-up text-4xl text-emerald-600 mb-3 block"></i>
+                            <p class="font-medium text-emerald-800">Click or Drag Image Here</p>
+                        </div>
+                        <img id="imagePreview" class="hidden max-h-56 mx-auto rounded-xl shadow-md object-cover">
+                    </div>
+                    <div class="mt-6 space-y-3">
+                        <button id="predictBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all hidden">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Analyze Leaf
+                        </button>
+                        <button id="resetBtn" class="w-full text-emerald-700 hover:text-emerald-900 font-medium py-2 text-sm hidden">Clear Image</button>
+                    </div>
+                    
+                    <div id="resultBox" class="hidden mt-6 p-5 bg-emerald-900 text-emerald-50 rounded-2xl shadow-inner text-left relative overflow-hidden">
+                        <h3 class="text-xs font-semibold uppercase text-emerald-300 mb-2">AI Diagnosis Result</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span id="resPrediction" class="text-xl font-bold">...</span>
+                            <span id="resConfidence" class="text-sm font-bold bg-emerald-500 text-white px-3 py-1 rounded-lg">...</span>
+                        </div>
+                        <div id="careAdviceBox" class="bg-emerald-950/50 p-3 rounded-xl text-sm border border-emerald-700 mt-2">
+                            <p class="font-medium text-emerald-300 mb-1"><i class="fa-solid fa-stethoscope"></i> Initial Advice:</p>
+                            <p id="resAdvice" class="text-emerald-100/90">...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="viewHistory" class="view-section hidden-section">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Recent Scans</h2>
+                    <button onclick="clearHistory()" class="text-red-500 hover:bg-red-50 px-3 py-1 rounded-lg text-sm font-bold transition-colors">Clear All History</button>
+                </div>
+                <div id="historyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    </div>
+            </div>
+
+            <div id="viewTreated" class="view-section hidden-section">
+                <h2 class="text-2xl font-bold mb-2">Successfully Treated</h2>
+                <p class="text-emerald-600 mb-6">Plants that recovered after your care.</p>
+                <div id="treatedGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    </div>
+            </div>
+
+            <div id="viewGuides" class="view-section hidden-section">
+                <h2 class="text-2xl font-bold mb-6">Disease Treatments & Care Guides</h2>
+                <div id="guidesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // ---------------------------------------------------------
+        // 1. KNOWLEDGE BASE (Updated Care Guides Dictionary)
+        // ---------------------------------------------------------
+        const diseaseDatabase = {
+            // 🍅 TOMATO
+            "Tomato_healthy": { name: "Healthy Tomato Leaf", type: "Healthy", treatment: "No treatment required. Continue regular watering (1-2 inches per week) and provide balanced fertilizer every 2 weeks.", duration: "Ongoing Maintenance" },
+            "Tomato_Early_blight": { name: "Tomato Early Blight", type: "Disease (Fungus)", treatment: "Prune lower leaves to improve air circulation. Apply Mancozeb or Copper fungicide. Water at the base of the plant.", duration: "1 to 2 weeks" },
+            "Tomato_Late_blight": { name: "Tomato Late Blight", type: "Disease (Fungus)", treatment: "Immediately remove and destroy affected leaves. Apply Copper-based fungicide or Chlorothalonil every 7-10 days.", duration: "2 to 3 weeks" },
+            "Tomato_Bacterial_spot": { name: "Tomato Bacterial Spot", type: "Disease (Bacteria)", treatment: "Apply copper fungicides mixed with mancozeb. Avoid overhead watering and handle plants only when dry.", duration: "2 to 4 weeks" },
+            "Tomato_Leaf_Mold": { name: "Tomato Leaf Mold", type: "Disease (Fungus)", treatment: "Improve air circulation around the plant. Reduce humidity. Apply chlorothalonil or copper fungicide.", duration: "1 to 3 weeks" },
+            "Tomato_Spider_mites_Two_spotted_spider_mite": { name: "Tomato Spider Mites", type: "Pest Attack", treatment: "Spray with Neem oil, insecticidal soap, or horticultural oil. Keep plants well-watered.", duration: "1 to 2 weeks" },
+
+            // 🥔 POTATO
+            "Potato_healthy": { name: "Healthy Potato Leaf", type: "Healthy", treatment: "Maintain consistent soil moisture. Hill up soil around the stem to protect developing tubers.", duration: "Ongoing Maintenance" },
+            "Potato_Early_blight": { name: "Potato Early Blight", type: "Disease (Fungus)", treatment: "Use crop rotation. Apply chlorothalonil or mancozeb fungicides. Remove plant debris after harvest.", duration: "2 to 3 weeks" },
+            "Potato_Late_blight": { name: "Potato Late Blight", type: "Disease (Oomycete)", treatment: "Apply systemic fungicides. Destroy infected plants immediately to prevent spread.", duration: "2 to 4 weeks" },
+
+            // 🌽 CORN
+            "Corn_healthy": { name: "Healthy Corn Leaf", type: "Healthy", treatment: "Water deeply once a week. Apply nitrogen-rich fertilizer for optimal growth.", duration: "Ongoing Maintenance" },
+            "Corn_Common_rust": { name: "Corn Common Rust", type: "Disease (Fungus)", treatment: "Apply protective fungicides early. Plant rust-resistant corn varieties next season.", duration: "2 to 3 weeks" },
+            "Corn_Northern_Leaf_Blight": { name: "Northern Leaf Blight", type: "Disease (Fungus)", treatment: "Apply appropriate fungicides. Practice tillage to reduce infected crop residue.", duration: "2 to 4 weeks" },
+
+            // 🍎 APPLE
+            "Apple_healthy": { name: "Healthy Apple Leaf", type: "Healthy", treatment: "Prune annually for good air circulation. Apply fruit tree fertilizer in early spring.", duration: "Ongoing Maintenance" },
+            "Apple_Apple_scab": { name: "Apple Scab", type: "Disease (Fungus)", treatment: "Rake and destroy fallen leaves. Apply Captan or sulfur-based fungicides during bud break.", duration: "3 to 5 weeks" },
+            "Apple_Black_rot": { name: "Apple Black Rot", type: "Disease (Fungus)", treatment: "Prune out diseased branches. Apply Captan fungicide. Remove infected fruit from ground.", duration: "2 to 4 weeks" },
+            "Apple_Cedar_apple_rust": { name: "Cedar Apple Rust", type: "Disease (Fungus)", treatment: "Remove nearby cedar trees if possible. Apply preventative fungicides like Myclobutanil.", duration: "2 to 3 weeks" },
+
+            // ⚠️ GENERAL / DEFAULT
+            "Unknown": { name: "Unknown Condition", type: "General Warning", treatment: "Isolate the plant if possible. Check for pests under the leaves, avoid overwatering, and consult an expert.", duration: "Monitor daily" }
+        };
+
+        // ---------------------------------------------------------
+        // 2. STATE MANAGEMENT & LOCAL STORAGE
+        // ---------------------------------------------------------
+        let historyData = JSON.parse(localStorage.getItem('plantDocsHistory')) || [];
+
+        function saveScan(prediction, confidence, imageUrl) {
+            const newScan = {
+                id: Date.now(),
+                date: new Date().toLocaleString(),
+                prediction: prediction,
+                confidence: confidence,
+                image: imageUrl, 
+                status: diseaseDatabase[prediction]?.type === "Healthy" ? "Healthy" : "Active" 
+            };
+            historyData.unshift(newScan);
+            localStorage.setItem('plantDocsHistory', JSON.stringify(historyData));
+            updateStats();
+        }
+
+        function markAsTreated(id) {
+            const item = historyData.find(x => x.id === id);
+            if(item) {
+                item.status = "Treated";
+                item.treatedDate = new Date().toLocaleString();
+                localStorage.setItem('plantDocsHistory', JSON.stringify(historyData));
+                renderHistory();
+                renderTreated();
+                updateStats();
+                alert("Awesome! Plant marked as successfully treated. 🌱");
+            }
+        }
+
+        function clearHistory() {
+            if(confirm("Are you sure you want to delete all history?")) {
+                historyData = [];
+                localStorage.setItem('plantDocsHistory', JSON.stringify([]));
+                renderHistory();
+                renderTreated();
+                updateStats();
+            }
+        }
+
+        // ---------------------------------------------------------
+        // 3. UI RENDERING & NAVIGATION
+        // ---------------------------------------------------------
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden-section'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-emerald-800', 'text-white');
+                el.classList.add('text-emerald-200');
+            });
+            
+            document.getElementById('view' + viewName.charAt(0).toUpperCase() + viewName.slice(1)).classList.remove('hidden-section');
+            const activeNav = document.getElementById('nav' + viewName.charAt(0).toUpperCase() + viewName.slice(1));
+            activeNav.classList.remove('text-emerald-200');
+            activeNav.classList.add('bg-emerald-800', 'text-white');
+
+            if(viewName === 'history') renderHistory();
+            if(viewName === 'treated') renderTreated();
+            if(viewName === 'guides') renderGuides();
+        }
+
+        function updateStats() {
+            document.getElementById('statTotal').innerText = historyData.length;
+            document.getElementById('statDiseased').innerText = historyData.filter(x => x.status === 'Active' || x.status === 'Treated').length;
+            document.getElementById('statTreated').innerText = historyData.filter(x => x.status === 'Treated').length;
+        }
+
+        function renderHistory() {
+            const grid = document.getElementById('historyGrid');
+            grid.innerHTML = '';
+            if(historyData.length === 0) {
+                grid.innerHTML = `<p class="col-span-2 text-center text-gray-400 mt-10">No scans yet. Go to AI Detection to analyze a leaf!</p>`;
+                return;
+            }
+
+            historyData.forEach(scan => {
+                const info = diseaseDatabase[scan.prediction] || diseaseDatabase["Unknown"];
+                const isDiseased = scan.status === 'Active';
+                
+                grid.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-emerald-100 flex gap-4 relative">
+                        <img src="${scan.image}" class="w-24 h-24 object-cover rounded-xl border border-gray-200">
+                        <div class="flex-1 overflow-hidden">
+                            <h4 class="font-bold text-emerald-900 truncate" title="${scan.prediction}">${scan.prediction.replace(/_/g, ' ')}</h4>
+                            <p class="text-xs text-gray-500 mb-1"><i class="fa-regular fa-clock"></i> ${scan.date}</p>
+                            <span class="text-xs font-bold px-2 py-1 rounded bg-emerald-100 text-emerald-700">${scan.confidence}</span>
+                            
+                            ${isDiseased ? `
+                                <button onclick="markAsTreated(${scan.id})" class="mt-3 w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg transition-colors">
+                                    <i class="fa-solid fa-check"></i> Mark as Treated
+                                </button>
+                            ` : `
+                                <div class="mt-3 text-sm font-bold text-${scan.status === 'Treated' ? 'blue' : 'green'}-600">
+                                    <i class="fa-solid fa-${scan.status === 'Treated' ? 'shield-heart' : 'leaf'}"></i> Status: ${scan.status}
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderTreated() {
+            const grid = document.getElementById('treatedGrid');
+            const treatedData = historyData.filter(x => x.status === 'Treated');
+            grid.innerHTML = '';
+            
+            if(treatedData.length === 0) {
+                grid.innerHTML = `<p class="col-span-2 text-center text-gray-400 mt-10">You haven't marked any plants as treated yet.</p>`;
+                return;
+            }
+
+            treatedData.forEach(scan => {
+                grid.innerHTML += `
+                    <div class="bg-gradient-to-r from-emerald-50 to-blue-50 p-4 rounded-2xl shadow-sm border border-blue-100 flex gap-4">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 text-2xl shrink-0">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <h4 class="font-bold text-emerald-900 truncate line-through decoration-red-400">${scan.prediction.replace(/_/g, ' ')}</h4>
+                            <p class="text-sm font-bold text-blue-600 mt-1"><i class="fa-solid fa-check-circle"></i> Successfully Recovered</p>
+                            <p class="text-xs text-gray-500 mt-1">Treated on: ${scan.treatedDate}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderGuides() {
+            const grid = document.getElementById('guidesGrid');
+            
+            // FIX: Ensure it correctly checks if cards are already rendered
+            if(grid.children.length > 0) return; 
+            
+            // Clear any potential hidden HTML comments that might disrupt rendering
+            grid.innerHTML = ''; 
+            
+            Object.keys(diseaseDatabase).forEach(key => {
+                if(key === "Unknown") return;
+                const guide = diseaseDatabase[key];
+                const isHealthy = guide.type === "Healthy";
+                
+                grid.innerHTML += `
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border ${isHealthy ? 'border-green-200' : 'border-red-100'}">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-2xl ${isHealthy ? 'text-green-500' : 'text-red-500'}">
+                                <i class="fa-solid ${isHealthy ? 'fa-leaf' : 'fa-virus'}"></i>
+                            </span>
+                            <h3 class="text-lg font-bold">${guide.name}</h3>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-3 leading-relaxed"><strong>Treatment:</strong> ${guide.treatment}</p>
+                        <div class="bg-emerald-50 text-emerald-800 text-xs font-bold px-3 py-2 rounded-lg inline-block">
+                            <i class="fa-solid fa-hourglass-half"></i> Time: ${guide.duration}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // ---------------------------------------------------------
+        // 4. AUTH & PASSWORD POLICY
+        // ---------------------------------------------------------
+        function showRegister() {
+            document.getElementById('loginSection').classList.add('hidden-section');
+            document.getElementById('registerSection').classList.remove('hidden-section');
+        }
+
+        function showLogin() {
+            document.getElementById('registerSection').classList.add('hidden-section');
+            document.getElementById('loginSection').classList.remove('hidden-section');
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            if (email) {
+                let userName = email.split('@')[0];
+                document.getElementById('userNameDisplay').innerText = userName.charAt(0).toUpperCase() + userName.slice(1);
+                document.getElementById('authContainer').classList.add('hidden-section');
+                document.getElementById('appDashboard').classList.remove('hidden-section');
+                updateStats();
+                switchView('home');
+            } else { alert("Enter an email to continue."); }
+        }
+
+        function handleLogout() {
+            document.getElementById('appDashboard').classList.add('hidden-section');
+            document.getElementById('authContainer').classList.remove('hidden-section');
+        }
+
+        const regPassword = document.getElementById('regPassword');
+        regPassword.addEventListener('input', () => {
+            const val = regPassword.value;
+            let isValid = true;
+            const check = (condition, elementId, text) => {
+                const el = document.getElementById(elementId);
+                if(condition) { el.className = "text-green-500"; el.innerHTML = "✔ " + text; }
+                else { el.className = "text-red-500"; el.innerHTML = "✖ " + text; isValid = false; }
+            };
+            check(val.length >= 8, 'reqLength', 'Minimum 8 characters');
+            check(/[a-zA-Z]/.test(val), 'reqLetter', 'At least 1 alphabet');
+            check(/[!@#$%^&*(),.?":{}|<>]/.test(val), 'reqSpecial', 'At least 1 special character');
+
+            const btn = document.getElementById('registerBtn');
+            if (isValid) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.onclick = () => { alert("Registered! Please login."); showLogin(); };
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+        // ---------------------------------------------------------
+        // 5. API & AI INFERENCE LOGIC
+        // ---------------------------------------------------------
+        const API_URL = "http://localhost:8000/predict";
+        const fileInput = document.getElementById('fileInput');
+        const imgPreview = document.getElementById('imagePreview');
+        let currentBase64Image = "";
+
+        document.getElementById('dropzone').addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', function() {
+            if (this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    currentBase64Image = e.target.result;
+                    imgPreview.src = e.target.result;
+                    imgPreview.classList.remove('hidden');
+                    document.getElementById('uploadPrompt').classList.add('hidden');
+                    document.getElementById('predictBtn').classList.remove('hidden');
+                    document.getElementById('resetBtn').classList.remove('hidden');
+                    document.getElementById('resultBox').classList.add('hidden');
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            fileInput.value = '';
+            imgPreview.classList.add('hidden');
+            document.getElementById('uploadPrompt').classList.remove('hidden');
+            document.getElementById('predictBtn').classList.add('hidden');
+            document.getElementById('resetBtn').classList.add('hidden');
+            document.getElementById('resultBox').classList.add('hidden');
+        });
+
+        document.getElementById('predictBtn').addEventListener('click', async () => {
+            if (!fileInput.files[0]) return;
+            const btn = document.getElementById('predictBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Analyzing...';
+            
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            try {
+                const response = await fetch(API_URL, { method: "POST", body: formData });
+                const data = await response.json();
+                
+                const predStr = data.prediction;
+                document.getElementById('resPrediction').innerText = predStr.replace(/_/g, ' ');
+                document.getElementById('resConfidence').innerText = data.confidence;
+                
+                const info = diseaseDatabase[predStr] || diseaseDatabase["Unknown"];
+                document.getElementById('resAdvice').innerText = info.treatment;
+                
+                document.getElementById('resultBox').classList.remove('hidden');
+                saveScan(predStr, data.confidence, currentBase64Image);
+
+            } catch (error) {
+                alert("Server not responding. Ensure Docker API is running!");
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Analyze Leaf';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Virtual Environment
+venv/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# MLflow and Data (Agar dataset bohat bara hai toh usey upload nahi karte)
+mlruns/
+data/
+*.h5
+*.keras
